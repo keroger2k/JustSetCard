@@ -17,7 +17,7 @@
 
 - (Card *)cardAtIndex:(NSUInteger)index;
 
-- (Card *)getRandomCard;
+- (void)addCardFromDeck;
 
 @property (strong, nonatomic) NSMutableArray *cards;
 @property (nonatomic) int score;

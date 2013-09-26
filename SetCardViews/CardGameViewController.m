@@ -17,6 +17,7 @@
 @interface CardGameViewController () <UICollectionViewDataSource>
 @property (strong, nonatomic) SetCardMatchingGame *game;
 @property (strong, nonatomic) Deck *deck;
+@property (weak, nonatomic) IBOutlet UILabel *cardsRemaining;
 @property (weak, nonatomic) IBOutlet UICollectionView *cardCollectionView;
 @end
 
@@ -30,16 +31,13 @@
 - (NSInteger)collectionView:(UICollectionView *)collectionView
      numberOfItemsInSection:(NSInteger)section
 {
-    UICollectionViewFlowLayout *flow = (UICollectionViewFlowLayout *)collectionView.collectionViewLayout;
-    flow.sectionInset = UIEdgeInsetsMake(10, 10, 10, 10);
-    return self.startingCardCount;
+    return [self.game.cards count];
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView
                   cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     UICollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"SetCard" forIndexPath:indexPath];
-    //NSLog(@"index path: %d", indexPath.item);
     Card *card = [self.game cardAtIndex:indexPath.item];
     [self updateCell:cell usingCard:card];
     return cell;
@@ -47,7 +45,7 @@
 
 - (NSUInteger)startingCardCount
 {
-    return 40;
+    return 12;
 }
 
 - (Deck *)deck
@@ -58,7 +56,7 @@
 
 - (SetCardMatchingGame *)game
 {
-    if(!_game) _game = [[SetCardMatchingGame alloc] initWithCardCount:self.deck.count usingDeck:self.deck];
+    if(!_game) _game = [[SetCardMatchingGame alloc] initWithCardCount:self.startingCardCount usingDeck:self.deck];
     return _game;
 }
 
@@ -67,10 +65,6 @@
     if([cell isKindOfClass:[SetCardCollectionViewCell class]]) {
         SetCardView *setCardView = ((SetCardCollectionViewCell *)cell).setCardView;
         if([card isKindOfClass:[SetCard class]]){
-            if(card.isUnplayable) {
-                [self.game.cards removeObject:card];
-                card = [self.game getRandomCard];
-            }
             SetCard *setCard = (SetCard *)card;
             setCardView.rank = setCard.rank;
             setCardView.shade = setCard.shade;
@@ -79,6 +73,7 @@
             setCardView.faceUp = setCard.isFaceUp;
         }
     }
+    self.cardsRemaining.text = [NSString stringWithFormat:@"Cards Reamining: %d", 81 - [self.game.cards count]];
 }
 
 - (void)updateUI
@@ -90,6 +85,26 @@
         [self updateCell:cell usingCard:card];
     }
     
+}
+
+- (IBAction)addThreeCards {
+    
+    for (int i = 0; i < 3; i++) {
+        [self.game addCardFromDeck];
+    }
+    [self.cardCollectionView insertItemsAtIndexPaths:@[
+                                                       [NSIndexPath indexPathForItem:[self.game.cards count] - 3 inSection:0],
+                                                       [NSIndexPath indexPathForItem:[self.game.cards count] - 2 inSection:0],
+                                                       [NSIndexPath indexPathForItem:[self.game.cards count] - 1 inSection:0]
+                                                       ]];
+    [self.cardCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:([self.game.cards count]-1) inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
+    self.cardsRemaining.text = [NSString stringWithFormat:@"Cards Reamining: %d", 81 - [self.game.cards count]];
+}
+
+- (IBAction)deal{
+    _game = nil;
+    _deck = nil;
+    [self updateUI];
 }
 
 - (IBAction)flipCard:(UITapGestureRecognizer *)gesture {

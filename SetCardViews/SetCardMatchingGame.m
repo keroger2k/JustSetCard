@@ -32,18 +32,10 @@
     return (index < [self.cards count]) ? self.cards[index] : nil;
 }
 
-- (Card *)getRandomCard
-{
-    Card *randomCard = nil;
-    
-    if(self.cards.count) {
-        unsigned index = arc4random() % self.cards.count;
-        randomCard = self.cards[index];
-        [self.cards removeObjectAtIndex:index];
-    }
-    
-    return randomCard;
+- (void)addCardFromDeck {
+    [self.cards addObject:[self.deck drawRandomCard]];
 }
+
 
 - (id)initWithCardCount:(NSUInteger)cardCount usingDeck:(Deck *)deck
 {
@@ -60,8 +52,8 @@
                 self.cards[i] = card;
             }
         }
-    }
-    return self;
+    }    return self;
+    
 }
 
 #define FLIP_COST 1
