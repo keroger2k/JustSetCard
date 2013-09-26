@@ -78,9 +78,9 @@
                 Card *cardOne = cardsInPlay[0];
                 Card *cardTwo = cardsInPlay[1];
                 if(matchScore){
-                    cardOne.unplayable = YES;
-                    cardTwo.unplayable = YES;
-                    card.unplayable = YES;
+                    [self.cards removeObject:card];
+                    [self.cards removeObject:cardOne];
+                    [self.cards removeObject:cardTwo];
                     self.score += matchScore * MATCH_BONUS;
                     [self.messenger addObject:[NSString stringWithFormat:@"Matched %@ & %@ & %@ for %d points",
                                                cardOne.contents, cardTwo.contents, card.contents, matchScore * MATCH_BONUS]];

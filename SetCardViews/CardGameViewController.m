@@ -18,7 +18,10 @@
 @property (strong, nonatomic) SetCardMatchingGame *game;
 @property (strong, nonatomic) Deck *deck;
 @property (weak, nonatomic) IBOutlet UILabel *cardsRemaining;
+@property (weak, nonatomic) IBOutlet UILabel *messageLabel;
+@property (weak, nonatomic) IBOutlet UILabel *scoreLabel;
 @property (weak, nonatomic) IBOutlet UICollectionView *cardCollectionView;
+@property (weak, nonatomic) IBOutlet UIButton *addThreeButton;
 @end
 
 @implementation CardGameViewController
@@ -84,7 +87,9 @@
         Card *card = [self.game cardAtIndex:indexPath.item];
         [self updateCell:cell usingCard:card];
     }
-    
+    self.scoreLabel.text = [NSString stringWithFormat:@"Score %d", self.game.score];
+    self.messageLabel.text = [self.game.messenger lastObject];
+    self.addThreeButton.enabled = !([self.game.cards count] == 81);
 }
 
 - (IBAction)addThreeCards {
@@ -99,12 +104,17 @@
                                                        ]];
     [self.cardCollectionView scrollToItemAtIndexPath:[NSIndexPath indexPathForRow:([self.game.cards count]-1) inSection:0] atScrollPosition:UICollectionViewScrollPositionBottom animated:YES];
     self.cardsRemaining.text = [NSString stringWithFormat:@"Cards Reamining: %d", 81 - [self.game.cards count]];
+    if([self.game.cards count] == 81) {
+        self.addThreeButton.enabled = NO;
+    }
 }
 
 - (IBAction)deal{
     _game = nil;
     _deck = nil;
+    [self.cardCollectionView reloadData];
     [self updateUI];
+    
 }
 
 - (IBAction)flipCard:(UITapGestureRecognizer *)gesture {
