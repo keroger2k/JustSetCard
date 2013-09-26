@@ -89,7 +89,7 @@
     }
     self.scoreLabel.text = [NSString stringWithFormat:@"Score %d", self.game.score];
     self.messageLabel.text = [self.game.messenger lastObject];
-    self.addThreeButton.enabled = !([self.game.cards count] == 81);
+    self.addThreeButton.enabled = ([self.game.cards count] != 81);
 }
 
 - (IBAction)addThreeCards {
